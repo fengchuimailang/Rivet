@@ -1,0 +1,56 @@
+schema_version = 1
+project = "rivet-fifo-benchmark"
+
+[python]
+package_manager = "uv"
+lockfile = "uv.lock"
+requires_python = ">=3.12"
+
+[tools.verilator]
+command = "verilator"
+minimum_version = "5.000"
+validated_versions = []
+
+[tools.yosys]
+command = "yosys"
+minimum_version = "0.40"
+validated_versions = []
+
+[tools.python]
+command = "python3"
+minimum_version = "3.12"
+resolved_by = "uv"
+
+[tools.make]
+command = "make"
+minimum_version = "4.0"
+
+[tools.cocotb]
+import_name = "cocotb"
+minimum_version = "2.0"
+validated_versions = ["2.1.0"]
+package_manager = "uv"
+
+[jobs.lint]
+kind = "lint"
+entrypoint = "benchmarks/fifo/Makefile"
+target = "lint"
+required_tools = ["verilator"]
+timeout_seconds = 120
+
+[jobs.compile]
+kind = "compile"
+entrypoint = "benchmarks/fifo/Makefile"
+target = "compile"
+required_tools = ["verilator"]
+timeout_seconds = 120
+
+[jobs.test]
+kind = "test"
+entrypoint = "benchmarks/fifo/Makefile"
+target = "test"
+required_tools = ["verilator", "cocotb"]
+timeout_seconds = 600
+
+[benchmark]
+manifest = "benchmarks/fifo/manifest.yaml"

@@ -1,0 +1,6 @@
+schema_version = 1
+description = "Toolchain combinations that maintainers have run against the FIFO benchmark."
+
+# No complete EDA combination is declared validated until the benchmark passes
+# on that exact environment. Local detection is recorded separately per run.
+validated_environments = []
