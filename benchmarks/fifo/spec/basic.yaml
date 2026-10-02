@@ -1,0 +1,61 @@
+schema_version: 1
+spec_id: fifo-v1
+revision: 1
+title: Single-clock synchronous FIFO
+description: >-
+  A bounded FIFO with deterministic behavior for reset, boundary conditions,
+  concurrent operations, and parameterized width and depth.
+
+parameters:
+  DATA_WIDTH:
+    type: integer
+    minimum: 1
+  DEPTH:
+    type: integer
+    minimum: 1
+
+clocking:
+  clock: clk
+  edge: rising
+  reset:
+    signal: rst
+    synchronous: true
+    polarity: active_high
+
+interface:
+  inputs:
+    - {name: clk, width: 1}
+    - {name: rst, width: 1}
+    - {name: wr_en, width: 1}
+    - {name: rd_en, width: 1}
+    - {name: w_data, width: DATA_WIDTH}
+  outputs:
+    - {name: r_data, width: DATA_WIDTH}
+    - {name: full, width: 1}
+    - {name: empty, width: 1}
+
+requirements:
+  - id: FIFO-RESET-001
+    text: On a rising edge with rst asserted, the FIFO becomes empty.
+  - id: FIFO-RESET-002
+    text: After reset, full is 0 and r_data is all zeroes.
+  - id: FIFO-WRITE-001
+    text: A write occurs on a rising edge only when wr_en is 1 and full is 0.
+  - id: FIFO-READ-001
+    text: A read occurs on a rising edge only when rd_en is 1 and empty is 0.
+  - id: FIFO-BOUNDARY-001
+    text: A write while full is 1 is ignored.
+  - id: FIFO-BOUNDARY-002
+    text: A read while empty is 1 is ignored and r_data is unchanged.
+  - id: FIFO-CONCURRENT-001
+    text: A permitted read and write may occur on the same rising edge.
+  - id: FIFO-OUTPUT-001
+    text: On a permitted read, r_data updates to the dequeued value after the rising edge.
+  - id: FIFO-FLAGS-001
+    text: empty is 1 exactly when the FIFO contains zero entries, and full is 1 exactly when it contains DEPTH entries.
+
+behavior:
+  invalid_operations: ignored
+  simultaneous_read_write: permitted_when_each_operation_is_valid
+  output_mode: registered
+  supported_depths: all_integers_at_least_one
