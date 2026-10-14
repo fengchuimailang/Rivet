@@ -17,6 +17,21 @@ Python packages are managed with `uv` and pinned by `uv.lock`. The configured
 `uv` environment is authoritative for Python and cocotb checks; a system Python
 package installation does not count as satisfying the project dependency.
 
+The MVP is not packaged as an installed wheel yet. Run the development CLI from
+the repository with `PYTHONPATH=src uv run --no-sync python -m rivet.cli doctor`.
+The install workflow is available through the same command:
+
+```console
+PYTHONPATH=src uv run --no-sync python -m rivet.cli install
+```
+
+This synchronizes the locked Python development dependencies with `uv sync
+--dev`, runs the environment check, and prints a system package hint when
+Verilator, Yosys, or Make is missing. It never runs `sudo` or changes system
+packages. Use `--python-only` to skip the check, or `--check` to inspect an
+existing environment without changing it. Future CLI packaging can reuse the
+same `rivet.cli:main` entrypoint without changing the doctor output contract.
+
 ## Jobs
 
 Only `lint`, `compile`, and `test` are declared for the FIFO MVP. Each job names
