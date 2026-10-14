@@ -217,7 +217,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# FIFO simulator outputs
+# Rivet local runs and simulator outputs
+.rivet/
 benchmarks/fifo/obj_dir/
 benchmarks/fifo/sim_build/
 benchmarks/fifo/results.xml

@@ -53,4 +53,4 @@ required_tools = ["verilator", "cocotb"]
 timeout_seconds = 600
 
 [benchmark]
-manifest = "benchmarks/fifo/manifest.yaml"
+manifest = "benchmarks/fifo/manifest.json"

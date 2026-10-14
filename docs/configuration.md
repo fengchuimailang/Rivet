@@ -5,6 +5,9 @@ CLI and future Agent runtime. It contains executable names, version constraints,
 and repository-relative entrypoints. It must not contain machine-specific
 absolute paths or arbitrary shell command strings.
 
+Benchmark manifests use JSON so the CLI can parse them with Python's standard
+library and generated cases remain straightforward for tools to write.
+
 ## Tools
 
 Each tool declares its command or Python import name, a minimum supported
@@ -55,3 +58,41 @@ the declared FIFO jobs pass on that environment.
 An environment can satisfy all minimum versions and still be outside the
 validated matrix. Such runs are allowed by policy but must be reported as
 `unvalidated`, with the detected versions preserved in the run result.
+
+## Local Runner
+
+Run a declared case with the development CLI:
+
+```console
+PYTHONPATH=src uv run --no-sync python -m rivet.cli run --benchmark fifo --case fifo-basic
+```
+
+The runner validates required tools, copies the benchmark into an isolated
+workspace, then executes configured jobs in order. Each run is stored under
+`.rivet/runs/<run-id>/` with a `run.json`, per-job stdout/stderr logs, and the
+workspace snapshot. The runner invokes fixed `make` targets from `rivet.toml`;
+callers cannot provide shell commands.
+
+The FIFO manifest provides `fifo-basic`, `fifo-depth-1`, `fifo-depth-3`,
+`fifo-width-1`, and `fifo-random-32x16`. `DATA_WIDTH` and `DEPTH` must be positive
+integers, and seeds must be nonnegative integers. Parameters are applied to both
+RTL compilation and the acceptance model. Jobs always run in the order `lint`,
+`compile`, `test`; after a failure, remaining jobs are recorded as `skipped`.
+Missing or unsupported required tools produce a failed precheck in `run.json`.
+
+The runner reuses the Python/cocotb environment of its interpreter without
+installing dependencies or creating a virtual environment per run. It passes
+only selected environment variables to jobs and limits each job's combined
+stdout/stderr to 4 MiB. Timeout, output limit, and Ctrl+C terminate the process
+group. Results record exit codes, signals, termination reasons, durations,
+input hashes, tool versions, and a relative artifact index. Exit codes are `0`
+for passed runs, `1` for failed runs, `2` for invalid configuration or arguments,
+and `130` for cancellation during job execution.
+
+Execution status and toolchain validation status are separate: a run may pass
+while its tools remain `unvalidated`. The current runner supports the FIFO
+benchmark on Linux/WSL and uses trusted repository Makefiles and acceptance
+tests. Workspace copies separate build artifacts from sources; they are not an
+operating-system sandbox.
+
+Run the Runner regression tests with `uv run --no-sync pytest -q`.

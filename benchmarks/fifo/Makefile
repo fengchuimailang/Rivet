@@ -5,7 +5,8 @@ TOPLEVEL := fifo
 MODULE := acceptance_test
 VERILOG_SOURCES := $(CURDIR)/rtl/fifo.sv
 PYTHONPATH := $(CURDIR)/golden
-VENV_BIN := $(shell uv run python -c 'import sysconfig; print(sysconfig.get_path("scripts"))')
+VENV_BIN ?= $(shell uv run --no-sync python -c 'import sysconfig; print(sysconfig.get_path("scripts"))')
+COCOTB_MAKEFILES ?= $(shell uv run --no-sync cocotb-config --makefiles)
 
 FIFO_DATA_WIDTH ?= 8
 FIFO_DEPTH ?= 4
@@ -30,7 +31,7 @@ compile:
 		$(VERILOG_SOURCES)
 
 test:
-	$(MAKE) -f $(shell uv run cocotb-config --makefiles)/Makefile.sim \
+	$(MAKE) -f $(COCOTB_MAKEFILES)/Makefile.sim \
 		SIM=$(SIM) \
 		TOPLEVEL_LANG=$(TOPLEVEL_LANG) \
 		TOPLEVEL=$(TOPLEVEL) \
