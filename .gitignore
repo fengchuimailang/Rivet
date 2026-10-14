@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# FIFO simulator outputs
+benchmarks/fifo/obj_dir/
+benchmarks/fifo/sim_build/
+benchmarks/fifo/results.xml

@@ -13,6 +13,8 @@ module fifo #(
 );
     localparam int PTR_WIDTH = (DEPTH <= 1) ? 1 : $clog2(DEPTH);
     localparam int COUNT_WIDTH = $clog2(DEPTH + 1);
+    localparam logic [COUNT_WIDTH-1:0] DEPTH_COUNT = COUNT_WIDTH'(DEPTH);
+    localparam logic [PTR_WIDTH-1:0] LAST_PTR = PTR_WIDTH'(DEPTH - 1);
 
     logic [DATA_WIDTH-1:0] storage [0:DEPTH-1];
     logic [PTR_WIDTH-1:0] wr_ptr;
@@ -25,10 +27,10 @@ module fifo #(
     end
 
     assign empty = (count == 0);
-    assign full = (count == DEPTH);
+    assign full = (count == DEPTH_COUNT);
 
     function automatic [PTR_WIDTH-1:0] next_ptr(input [PTR_WIDTH-1:0] ptr);
-        if (ptr == DEPTH - 1)
+        if (ptr == LAST_PTR)
             next_ptr = '0;
         else
             next_ptr = ptr + 1'b1;

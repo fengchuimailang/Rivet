@@ -13,6 +13,9 @@ minimum is unsupported. A version that meets the minimum but is absent from
 `validated_versions` may be tried, but each run must be marked `unvalidated`.
 An empty validated list means no version has yet been validated for that tool.
 
+The cocotb 2.1.0 Verilator backend requires Verilator 5.036 or newer, so the
+project's minimum Verilator version reflects this dependency.
+
 Python packages are managed with `uv` and pinned by `uv.lock`. The configured
 `uv` environment is authoritative for Python and cocotb checks; a system Python
 package installation does not count as satisfying the project dependency.

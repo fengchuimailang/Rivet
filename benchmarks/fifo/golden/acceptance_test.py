@@ -5,7 +5,7 @@ import random
 
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge
+from cocotb.triggers import ReadWrite, RisingEdge
 
 from reference_model import FifoModel
 
@@ -29,6 +29,7 @@ async def acceptance_test(dut):
     dut.rd_en.value = 0
     dut.w_data.value = 0
     await RisingEdge(dut.clk)
+    await ReadWrite()
     model.reset()
     assert int(dut.empty.value) == 1
     assert int(dut.full.value) == 0
@@ -46,6 +47,7 @@ async def acceptance_test(dut):
         old_r_data = model.r_data
         model.step(wr_en=wr_en, rd_en=rd_en, w_data=w_data)
         await RisingEdge(dut.clk)
+        await ReadWrite()
         assert int(dut.empty.value) == int(model.empty)
         assert int(dut.full.value) == int(model.full)
         expected_r_data = model.r_data if rd_en and not old_empty else old_r_data

@@ -15,16 +15,16 @@ export PYTHONPATH
 export FIFO_DATA_WIDTH FIFO_DEPTH FIFO_SEED
 export PATH := $(VENV_BIN):$(PATH)
 
-.PHONY: lint compile test
+.PHONY: lint compile test clean
 
 lint:
-	verilator --lint-only --language 1800 \
+	verilator --lint-only --language 1800-2012 \
 		-GDATA_WIDTH=$(FIFO_DATA_WIDTH) \
 		-GDEPTH=$(FIFO_DEPTH) \
 		$(VERILOG_SOURCES)
 
 compile:
-	verilator --binary --timing --language 1800 \
+	verilator --binary --timing --language 1800-2012 \
 		-GDATA_WIDTH=$(FIFO_DATA_WIDTH) \
 		-GDEPTH=$(FIFO_DEPTH) \
 		$(VERILOG_SOURCES)
@@ -36,7 +36,11 @@ test:
 		TOPLEVEL=$(TOPLEVEL) \
 		MODULE=$(MODULE) \
 		VERILOG_SOURCES="$(VERILOG_SOURCES)" \
+		EXTRA_ARGS="-GDATA_WIDTH=$(FIFO_DATA_WIDTH) -GDEPTH=$(FIFO_DEPTH)" \
 		PYTHONPATH=$(PYTHONPATH) \
 		FIFO_DATA_WIDTH=$(FIFO_DATA_WIDTH) \
 		FIFO_DEPTH=$(FIFO_DEPTH) \
 		FIFO_SEED=$(FIFO_SEED)
+
+clean:
+	rm -rf obj_dir sim_build results.xml
